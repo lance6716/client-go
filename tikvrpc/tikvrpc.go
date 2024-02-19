@@ -36,6 +36,8 @@ package tikvrpc
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"sync/atomic"
 	"time"
 
@@ -47,10 +49,8 @@ import (
 	"github.com/pingcap/kvproto/pkg/mpp"
 	"github.com/pingcap/kvproto/pkg/tikvpb"
 	"github.com/pkg/errors"
-	"github.com/tikv/client-go/v2/internal/logutil"
 	"github.com/tikv/client-go/v2/kv"
 	"github.com/tikv/client-go/v2/oracle"
-	"go.uber.org/zap"
 )
 
 // CmdType represents the concrete request type in Request or response type in Response.
@@ -1033,7 +1033,12 @@ func CallRPC(ctx context.Context, client tikvpb.TikvClient, req *Request) (*Resp
 	var err error
 	switch req.Type {
 	case CmdGet:
-		logutil.BgLogger().Info("lance test", zap.Any("req", req))
+		data, err2 := json.Marshal(req)
+		if err2 == nil {
+			fmt.Printf("lance test %s\n", string(data))
+		} else {
+			fmt.Printf("lance test %s\n", err2.Error())
+		}
 		resp.Resp, err = client.KvGet(ctx, req.Get())
 	case CmdScan:
 		resp.Resp, err = client.KvScan(ctx, req.Scan())
@@ -1048,7 +1053,12 @@ func CallRPC(ctx context.Context, client tikvpb.TikvClient, req *Request) (*Resp
 	case CmdCleanup:
 		resp.Resp, err = client.KvCleanup(ctx, req.Cleanup())
 	case CmdBatchGet:
-		logutil.BgLogger().Info("lance test", zap.Any("req", req))
+		data, err2 := json.Marshal(req)
+		if err2 == nil {
+			fmt.Printf("lance test %s\n", string(data))
+		} else {
+			fmt.Printf("lance test %s\n", err2.Error())
+		}
 		resp.Resp, err = client.KvBatchGet(ctx, req.BatchGet())
 	case CmdBatchRollback:
 		resp.Resp, err = client.KvBatchRollback(ctx, req.BatchRollback())
